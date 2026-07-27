@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\UsersPharmacies;
 
 use App\Http\Controllers\Controller;
+use App\Models\Pharmacist;
 use App\Models\Pharmacy;
 use App\Models\PharmacyRequest;
 use App\Models\User;
@@ -49,6 +50,25 @@ class PharmacyRequestController extends Controller
         return view('PharmacyRequest.index', compact('pharmacyRequest', 'pharmacist'));
     }
 
+    /**
+     * A pharmacist is only ever licensed to be pharmacist-in-charge of one
+     * pharmacy — once they have one (or a request already pending), they
+     * cannot register another. Returns an error message if blocked, null if
+     * they're clear to proceed.
+     */
+    private function blockedReason(Pharmacist $pharmacist): ?string
+    {
+        if ($pharmacist->pharmacies) {
+            return 'أنت مسؤول بالفعل عن صيدلية مسجلة باسمك. لا يجوز للصيدلي أن يكون مسؤولاً عن أكثر من صيدلية واحدة.';
+        }
+
+        if (PharmacyRequest::where('pharmacist_id', $pharmacist->id)->where('status', 'pending')->exists()) {
+            return 'لديك طلب تسجيل صيدلية قيد المراجعة بالفعل.';
+        }
+
+        return null;
+    }
+
     public function create(Request $request)
     {
         $pharmacist = $request->user()->pharmacists;
@@ -58,8 +78,8 @@ class PharmacyRequestController extends Controller
                 ->with('error', 'يجب أن يتم اعتماد حسابك كصيدلي أولاً قبل تسجيل صيدلية.');
         }
 
-        if ($pharmacist->pharmacies || PharmacyRequest::where('pharmacist_id', $pharmacist->id)->where('status', 'pending')->exists()) {
-            return redirect()->route('pharmacy_request.index');
+        if ($reason = $this->blockedReason($pharmacist)) {
+            return redirect()->route('pharmacy_request.index')->with('error', $reason);
         }
 
         return view('PharmacyRequest.create');
@@ -74,8 +94,8 @@ class PharmacyRequestController extends Controller
                 ->with('error', 'يجب أن يتم اعتماد حسابك كصيدلي أولاً قبل تسجيل صيدلية.');
         }
 
-        if ($pharmacist->pharmacies || PharmacyRequest::where('pharmacist_id', $pharmacist->id)->where('status', 'pending')->exists()) {
-            return redirect()->route('pharmacy_request.index');
+        if ($reason = $this->blockedReason($pharmacist)) {
+            return redirect()->route('pharmacy_request.index')->with('error', $reason);
         }
 
         $validated = $request->validate($this->validationRules());
@@ -125,7 +145,19 @@ class PharmacyRequestController extends Controller
 
     public function approve(Request $request, $id)
     {
-        $pharmacyRequest = PharmacyRequest::findOrFail($id);
+        $pharmacyRequest = PharmacyRequest::with('pharmacist')->findOrFail($id);
+
+        if ($pharmacyRequest->status !== 'pending') {
+            return redirect()->route('admin.pharmacy_request.index')
+                ->with('error', 'تمت مراجعة هذا الطلب بالفعل.');
+        }
+
+        // Defense in depth: a pharmacist can only ever be in charge of one
+        // pharmacy — refuse rather than hit the DB's unique-constraint error.
+        if ($pharmacyRequest->pharmacist->pharmacies) {
+            return redirect()->route('admin.pharmacy_request.index')
+                ->with('error', 'هذا الصيدلي مسؤول بالفعل عن صيدلية أخرى، لا يمكن اعتماد صيدلية إضافية له.');
+        }
 
         $validated = $request->validate([
             'name_ar' => 'required|string|max:255',
@@ -171,6 +203,11 @@ class PharmacyRequestController extends Controller
     public function reject(Request $request, $id)
     {
         $pharmacyRequest = PharmacyRequest::with('pharmacist.users')->findOrFail($id);
+
+        if ($pharmacyRequest->status !== 'pending') {
+            return redirect()->route('admin.pharmacy_request.index')
+                ->with('error', 'تمت مراجعة هذا الطلب بالفعل.');
+        }
 
         $validated = $request->validate([
             'admin_notes' => 'nullable|string|max:1000',
