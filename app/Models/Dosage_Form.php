@@ -14,6 +14,7 @@ class Dosage_Form extends Model
     //
     use HasFactory, Notifiable, SoftDeletes;
     protected $guarded = [];
+    protected $table = 'dosage_forms';
 
     public function medicines()
     {

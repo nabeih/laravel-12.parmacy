@@ -12,8 +12,9 @@ class Active_Ingredient extends Model
 {
 
     //
-    use HasFactory, Notifiable,SoftDeletes;
+    use HasFactory, Notifiable, SoftDeletes;
     protected $guarded = [];
+    protected $table = 'active_ingredients';
     public function medicines()
     {
         return $this->belongsToMany(Medicine::class, 'medicine_active_ingredients')

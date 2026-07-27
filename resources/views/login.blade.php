@@ -26,7 +26,7 @@
 
         <div class="role-cards">
             <!-- User Card -->
-            <div class="role-card" onclick="window.location='user/login.html'">
+            <div class="role-card" onclick="window.location='{{ route('login.user') }}'">
                 <div class="role-icon-wrap user-icon">👤</div>
                 <h2>مستخدم</h2>
                 <p>ابحث عن الأدوية وتابع طلباتك وجرعاتك</p>
@@ -41,7 +41,7 @@
             </div>
 
             <!-- Pharmacist Card -->
-            <div class="role-card" onclick="window.location='pharmacist/login.html'">
+            <div class="role-card" onclick="window.location='{{ route('login.pharmacist') }}'">
                 <div class="role-icon-wrap pharm-icon">🏪</div>
                 <h2>صيدلاني</h2>
                 <p>أدر صيدليتك ومخزونك ومبيعاتك بكفاءة</p>
@@ -58,7 +58,7 @@
 
         <!-- Admin entry — small, less prominent -->
         <div style="margin-top:20px;text-align:center">
-            <div class="role-card" onclick="window.location='admin/login.html'"
+            <div class="role-card" onclick="window.location='{{ route('login.manager') }}'"
                 style="display:inline-block;max-width:220px;padding:16px 20px;text-align:center;opacity:.75;cursor:pointer">
                 <div class="role-icon-wrap"
                     style="background:#e2e8f0;font-size:20px;width:44px;height:44px;margin:0 auto 8px">🔧</div>

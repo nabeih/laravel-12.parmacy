@@ -22,7 +22,7 @@ return new class extends Migration
             $table->foreignId('manufacturer_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('category_id')->constrained('medicine_categories')->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('dosage_form_id')->constrained('dosage_forms')->cascadeOnUpdate()->restrictOnDelete();
-
+            $table->foreignId('active_ingredient_id')->constrained('active_ingredients')->cascadeOnUpdate()->restrictOnDelete();
             // Pricing
             $table->decimal('reference_price', 10, 2)->default(0);
 

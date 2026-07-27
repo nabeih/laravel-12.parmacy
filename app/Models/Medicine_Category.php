@@ -14,6 +14,7 @@ class Medicine_Category extends Model
     //
     use HasFactory, Notifiable, SoftDeletes;
     protected $guarded = [];
+    protected $table = 'medicine_categories';
 
     public function medicines()
     {

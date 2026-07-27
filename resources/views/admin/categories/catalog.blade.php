@@ -1,50 +1,52 @@
-@extends('masterpage')
+@extends('layouts.nav_admin')
 
 @section('title', 'Catelog')
 
 @section('content')
 
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
 
-
+@if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
 
 <div class="admin-page-header">
+
     <div>
-        <h1 class="admin-page-title">كتالوج الأدوية</h1>
-        <p class="admin-page-sub">قاعدة بيانات الأدوية المرجعية للمنصة</p>
+        <h1 class="admin-page-title"> صفحة الاقسام</h1>
+        <p class="admin-page-sub">قاعدة بيانات الاقسام المرجعية للمنصة</p>
     </div>
     <div style="display:flex;gap:8px">
         <button class="admin-btn admin-btn-outline" onclick="_exportCatalog()">⬇ تصدير CSV</button>
-        <button class="admin-btn admin-btn-primary" onclick="_openAddModal()">+ إضافة دواء</button>
+        <a href="{{ route('category.trash') }}" class="admin-btn admin-btn-outline">🗑 سلة المهملات</a>
+        <a href="{{ route('category.create') }}" class="admin-btn admin-btn-primary" onclick="_openAddModal()">+ إضافة
+            قسم</a>
     </div>
 </div>
 
 <div class="admin-card">
     <!-- Toolbar -->
     <div class="admin-toolbar">
-        <input class="admin-search" id="cat-search" placeholder="ابحث بالاسم عربي أو إنجليزي..."
-            oninput="_onCatSearch()">
-        <select class="admin-select" id="cat-category" onchange="_onCatFilter()">
-            <option value="">جميع التصنيفات</option>
-            <option>مسكن</option>
-            <option>مضاد حيوي</option>
-            <option>فيتامين</option>
-            <option>هضم</option>
-            <option>سكري</option>
-            <option>قلب</option>
-            <option>حساسية</option>
-            <option>ضغط</option>
-        </select>
-        <select class="admin-select" id="cat-rx" onchange="_onCatFilter()">
-            <option value="">الكل</option>
-            <option value="rx">بوصفة طبية</option>
-            <option value="otc">بدون وصفة</option>
-        </select>
+        <form method="GET" action="{{ route('category.index') }}" style="display:flex;gap:10px;flex:1">
+            <input type="text" name="q" value="{{ $q ?? '' }}" class="admin-search"
+                placeholder="ابحث بالاسم عربي أو إنجليزي...">
+            <button type="submit" class="admin-btn admin-btn-primary">🔍 بحث</button>
+            @if(($q ?? '') !== '')
+                <a href="{{ route('category.index') }}" class="admin-btn admin-btn-outline">إلغاء</a>
+            @endif
+        </form>
     </div>
 
     <!-- Bulk action bar -->
-    <div id="bulk-bar"
-        style="display:none;padding:10px 0;border-bottom:1px solid var(--admin-border);margin-bottom:12px;display:none;align-items:center;gap:12px">
-        <span id="bulk-count" style="font-size:13px;color:#64748b"></span>
+    <div id="bulk-bar" style="display:none;padding:10px 0;border-bottom:1px solid var(--admin-border);
+        margin-bottom:12px;display:none;align-items:center;gap:12px">
+        <span id="bulk-count" style="font-size:13px;color:#64748b">hi</span>
         <button class="admin-btn admin-btn-outline admin-btn-sm" onclick="_exportSelected()">⬇ تصدير
             المحدد</button>
         <button class="admin-btn admin-btn-danger admin-btn-sm" onclick="_confirmBulkDelete()">🗑 حذف
@@ -52,33 +54,45 @@
         <button class="admin-btn admin-btn-outline admin-btn-sm" onclick="_clearSelection()">إلغاء
             التحديد</button>
     </div>
+    {{-- {{ dd(get_defined_vars()) }} --}}
 
     <div class="admin-table-wrap">
+        <a href="{{ route('category.create') }}">اضافة قسم جديد</a>
+
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th><input type="checkbox" id="select-all" onclick="_toggleAll(this)"></th>
-                    <th>الاسم</th>
-                    <th>التصنيف</th>
-                    <th>الشركة المصنعة</th>
-                    <th>السعر (₪)</th>
-                    <th>الوصفة</th>
-                    <th>المخزون</th>
-                    <th>الصيدليات</th>
+                    {{-- <th><input type="checkbox" id="select-all" onclick="_toggleAll(this)"></th> --}}
+                    <th>الاسم بالانجليزي</th>
+                    <th>الاسم بالعربي</th>
+                    <th>هل فعال</th>
                     <th>إجراءات</th>
                 </tr>
             </thead>
             <tbody id="cat-tbody">
-                <td>
-                <th>ghgh</th>
-                <th>ghgh</th>
-                <th>ghgh</th>
-                <th>ghgh</th>
-                <th>ghgh</th>
-                <th>ghgh</th>
-                <th>ghgh</th>
-                <th>ghgh</th>
-                </td>
+                {{-- dd($categories); --}}
+                @foreach ($categories as $category)
+                    <tr>
+                        <td>{{ $category->name_en }}</td>
+                        <td>{{ $category->name_ar }}</td>
+                        <td>{{ $category->is_active ? 'نعم' : 'لا' }}</td>
+                        <td>
+                            <a href="{{ route('category.edit', $category->id) }}"
+                                class="admin-btn admin-btn-sm admin-btn-outline">تعديل</a>
+
+                            <form action="{{ route('admin.catgory.destroy', $category->id) }}" method="POST"
+                                style="display:inline"
+                                onsubmit="return confirm('هل أنت متأكد أنك تريد حذف هذا القسم؟');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="admin-btn admin-btn-sm admin-btn-danger">حذف</button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+                < {{-- @empty <span>{{ 'لايوجد بيانات' }}</span>
+
+                    @endforelse --}}
             </tbody>
         </table>
     </div>
@@ -180,7 +194,7 @@
         <p id="cat-delete-msg" style="color:#374151;margin:0 0 20px"></p>
         <div class="admin-modal-footer">
             <button class="admin-btn admin-btn-outline" onclick="_closeModal('cat-delete-modal')">إلغاء</button>
-            <button class="admin-btn admin-btn-danger" id="cat-delete-confirm-btn">حذف نهائياً</button>
+            <button class="admin-btn admin-btn-danger" onclick="_deleteCatalog()">حذف</button>
         </div>
     </div>
 </div>

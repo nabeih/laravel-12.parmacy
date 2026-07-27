@@ -14,25 +14,26 @@ class Medicine extends Model
     //
     use HasFactory, Notifiable, SoftDeletes;
     protected $guarded = [];
+    protected $table = 'medicines';
 
-    public function dosage_forms()
+    public function dosageForm()
     {
 
         return $this->belongsTo(Dosage_Form::class);
     }
 
-    public function medicine_categories()
+    public function category()
     {
         return $this->belongsTo(Medicine_Category::class, 'category_id');
     }
 
-    public function manufacturers()
+    public function manufacturer()
     {
 
         return $this->belongsTo(Manufacturer::class);
     }
 
-    public function active_ingredients()
+    public function activeIngredients()
     {
         return $this->belongsToMany(Active_Ingredient::class, 'medicine_active_ingredients', 'medicine_id', 'active_ingredient_id')
             ->withPivot('strength_value', 'strength_unit');

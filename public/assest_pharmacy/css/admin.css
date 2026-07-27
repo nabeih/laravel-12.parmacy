@@ -25,13 +25,14 @@ body.admin-page {
 
 /* ── Layout ──────────────────────────────────────────────── */
 .admin-layout { display: flex; min-height: 100vh; }
-.admin-main   { margin-right: 260px; flex: 1; padding: 28px; min-width: 0; }
+.admin-main   { margin-right: 260px; flex: 1; padding: 64px 28px 28px; min-width: 0; transition: margin-right .25s ease; }
 
 /* ── Sidebar ─────────────────────────────────────────────── */
 .admin-sidebar {
   width: 260px; background: var(--admin-sidebar-bg);
   height: 100vh; position: fixed; right: 0; top: 0;
   display: flex; flex-direction: column; z-index: 100; overflow: hidden;
+  transition: transform .25s ease;
 }
 .admin-logo { padding: 22px 20px; border-bottom: 1px solid rgba(255,255,255,.1); }
 .admin-logo-text { color: white; font-size: 18px; font-weight: 700; }
@@ -59,6 +60,25 @@ body.admin-page {
   font-family: inherit; font-size: 13px; transition: all .15s;
 }
 .admin-logout-btn:hover { background: rgba(239,68,68,.3); }
+
+/* ── Sidebar toggle / backdrop — hideable on demand at every screen size ── */
+.admin-sidebar-toggle {
+  display: flex;
+  position: fixed; top: 14px; left: 14px; z-index: 110;
+  width: 42px; height: 42px; align-items: center; justify-content: center;
+  border-radius: 10px; border: none; background: var(--admin-sidebar-bg);
+  color: #fff; font-size: 20px; line-height: 1; cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0,0,0,.25);
+}
+.admin-sidebar-backdrop {
+  display: none;
+  position: fixed; inset: 0; background: rgba(15,23,42,.5); z-index: 99;
+}
+
+/* User explicitly hid the sidebar — main content reflows to fill the space,
+   regardless of screen size. */
+body.sidebar-hidden .admin-sidebar { transform: translateX(100%); }
+body.sidebar-hidden .admin-main { margin-right: 0; }
 
 /* ── Page header ─────────────────────────────────────────── */
 .admin-page-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:22px; gap:12px; flex-wrap:wrap; }
@@ -255,9 +275,52 @@ body.admin-page {
   .admin-stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 768px) {
-  .admin-sidebar { transform: translateX(260px); transition: transform .3s; }
-  .admin-sidebar.open { transform: translateX(0); }
-  .admin-main { margin-right: 0; padding: 16px; }
+  /* Small screens: sidebar defaults to hidden and, when shown, overlays the
+     content (with a backdrop) instead of pushing it, since there's no room
+     to reflow. */
+  .admin-sidebar { transform: translateX(100%); }
+  body:not(.sidebar-hidden) .admin-sidebar { transform: translateX(0); box-shadow: -8px 0 32px rgba(0,0,0,.25); }
+  body:not(.sidebar-hidden) .admin-sidebar-backdrop { display: block; }
+  .admin-main { margin-right: 0; padding: 64px 16px 16px; }
   .admin-stats-grid { grid-template-columns: 1fr 1fr; }
   .admin-form-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .admin-stats-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Notification bell (shared across admin/pharmacist/user portals) ───── */
+.notif-bell-wrap { position: fixed; top: 14px; left: 66px; z-index: 110; }
+.notif-bell {
+  position: relative; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
+  border-radius: 10px; border: 1px solid var(--admin-border); background: #fff;
+  font-size: 19px; line-height: 1; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,.15);
+}
+.notif-bell-badge {
+  position: absolute; top: -6px; left: -6px; min-width: 18px; height: 18px; padding: 0 4px;
+  background: #ef4444; color: #fff; font-size: 11px; font-weight: 700; border-radius: 999px;
+  display: flex; align-items: center; justify-content: center;
+}
+.notif-bell-dropdown {
+  display: none; position: absolute; top: 50px; left: 0; width: 320px; max-width: 90vw;
+  background: #fff; border-radius: var(--admin-radius); box-shadow: 0 10px 40px rgba(0,0,0,.2);
+  overflow: hidden; max-height: 70vh;
+}
+.notif-bell-dropdown.open { display: flex; flex-direction: column; }
+.notif-bell-dropdown-header {
+  display: flex; justify-content: space-between; align-items: center; padding: 12px 14px;
+  border-bottom: 1px solid var(--admin-border); font-weight: 700; font-size: 14px; color: #1e293b;
+}
+.notif-bell-mark-all { background: none; border: none; color: var(--admin-accent); font-size: 12px; cursor: pointer; font-family: inherit; }
+.notif-bell-list { overflow-y: auto; flex: 1; }
+.notif-bell-item { display: block; padding: 10px 14px; text-decoration: none; border-bottom: 1px solid var(--admin-border); }
+.notif-bell-item:hover { background: #f8fafc; }
+.notif-bell-item.unread { background: #eff6ff; }
+.notif-bell-item-title { font-size: 13px; font-weight: 700; color: #1e293b; }
+.notif-bell-item-body { font-size: 12px; color: #475569; margin-top: 2px; }
+.notif-bell-item-time { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+.notif-bell-empty { padding: 24px 14px; text-align: center; color: #94a3b8; font-size: 13px; }
+.notif-bell-viewall { display: block; text-align: center; padding: 10px; font-size: 13px; color: var(--admin-accent); text-decoration: none; border-top: 1px solid var(--admin-border); }
+@media (max-width: 768px) {
+  .notif-bell-wrap { left: 62px; }
 }
