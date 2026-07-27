@@ -80,6 +80,11 @@
                     <span>🏪</span>
                     <span>الصيدليات</span>
                 </a>
+                <a href="{{ route('admin.pharmacy_request.index') }}"
+                    class="admin-nav-link {{ request()->routeIs('admin.pharmacy_request.*') ? 'active' : '' }}">
+                    <span>📋</span>
+                    <span>طلبات الصيدليات</span>
+                </a>
                 <a href="{{ route('pharmacist.index') }}"
                     class="admin-nav-link {{ request()->routeIs('pharmacist.index') || request()->routeIs('pharmacist.create') || request()->routeIs('pharmacist.store') ? 'active' : '' }}">
                     <span>🧑‍⚕️</span>

@@ -9,10 +9,10 @@
 <div class="admin-page-header">
     <div>
         <h1 class="admin-page-title">الصيدليات</h1>
-        <p class="admin-page-sub">قائمة الصيدليات المسجلة على المنصة</p>
+        <p class="admin-page-sub">قائمة الصيدليات المسجلة على المنصة — تُضاف عبر موافقة الإدارة على طلبات الصيادلة</p>
     </div>
-    <div style="display:flex;gap:8px">
-        <a href="{{ route('pharmacy.create') }}" class="admin-btn admin-btn-primary">+ إضافة صيدلية</a>
+    <div>
+        <a href="{{ route('admin.pharmacy_request.index') }}" class="admin-btn admin-btn-primary">📋 طلبات الصيدليات</a>
     </div>
 </div>
 

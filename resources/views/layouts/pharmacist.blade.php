@@ -60,6 +60,10 @@
             <nav class="flex-grow-1">
                 <a href="{{ route('pharmacist.dashboard') }}"
                     class="portal-nav-link {{ request()->routeIs('pharmacist.dashboard') ? 'active' : '' }}">🏠 الرئيسية</a>
+                @if($__pharmacist && $__pharmacist->status === 'approved')
+                    <a href="{{ route('pharmacy_request.index') }}"
+                        class="portal-nav-link {{ request()->routeIs('pharmacy_request.*') ? 'active' : '' }}">🏪 صيدليتي</a>
+                @endif
                 @if($isOperational)
                     <a href="{{ route('purchase.index') }}"
                         class="portal-nav-link {{ request()->routeIs('purchase.*') ? 'active' : '' }}">🧾 فواتير الشراء</a>
