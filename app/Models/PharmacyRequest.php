@@ -27,4 +27,9 @@ class PharmacyRequest extends Model
     {
         return $this->belongsTo(Pharmacy::class);
     }
+
+    public function targetPharmacy()
+    {
+        return $this->belongsTo(Pharmacy::class, 'target_pharmacy_id');
+    }
 }

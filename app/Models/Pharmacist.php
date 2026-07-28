@@ -23,4 +23,9 @@ class Pharmacist extends Model
     {
         return $this->hasOne(Pharmacy::class, 'pharmacist_id');
     }
+
+    public function assignments()
+    {
+        return $this->hasMany(PharmacyAssignment::class)->orderByDesc('started_at');
+    }
 }

@@ -31,6 +31,7 @@
         <table class="admin-table">
             <thead>
                 <tr>
+                    <th>النوع</th>
                     <th>الاسم</th>
                     <th>الصيدلي</th>
                     <th>الهاتف</th>
@@ -42,9 +43,23 @@
             <tbody>
                 @forelse ($requests as $req)
                     <tr>
-                        <td>{{ $req->name_ar }} <span class="text-muted">({{ $req->name_en }})</span></td>
+                        <td>
+                            @if($req->target_pharmacy_id)
+                                <span class="admin-badge admin-badge-blue">انضمام</span>
+                            @else
+                                <span class="admin-badge admin-badge-purple">تسجيل جديد</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($req->target_pharmacy_id)
+                                {{ $req->targetPharmacy->name_ar ?? '-' }} <span
+                                    class="text-muted">({{ $req->targetPharmacy->name_en ?? '-' }})</span>
+                            @else
+                                {{ $req->name_ar }} <span class="text-muted">({{ $req->name_en }})</span>
+                            @endif
+                        </td>
                         <td>{{ $req->pharmacist->users->name ?? '-' }}</td>
-                        <td>{{ $req->phone }}</td>
+                        <td>{{ $req->phone ?? '-' }}</td>
                         <td>{{ $req->created_at->format('Y-m-d') }}</td>
                         <td>
                             @if($req->status == 'approved')
@@ -71,7 +86,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6">
+                        <td colspan="7">
                             <div class="admin-empty">
                                 <div class="admin-empty-icon">🏪</div>
                                 <div class="admin-empty-title">لا يوجد طلبات صيدليات</div>

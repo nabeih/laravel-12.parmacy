@@ -30,6 +30,7 @@
                     <th>مواعيد العمل</th>
                     <th>الحالة</th>
                     <th>موثقة</th>
+                    <th>الاجراء</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,7 +38,8 @@
                     <tr>
                         <td>
                             @if($pharmacy->logo)
-                                <img src="{{ asset('storage/' . $pharmacy->logo) }}" alt="logo" style="width:36px;height:36px;border-radius:8px;object-fit:cover">
+                                <img src="{{ asset('storage/' . $pharmacy->logo) }}" alt="logo"
+                                    style="width:36px;height:36px;border-radius:8px;object-fit:cover">
                             @else
                                 🏪
                             @endif

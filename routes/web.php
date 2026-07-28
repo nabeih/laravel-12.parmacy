@@ -70,10 +70,11 @@ Route::get('/master', function () {
 Route::middleware(['auth', 'role:pharmacist'])->group(function () {
     Route::get('pharmacist/dashboard', [PharmacistDashboardController::class, 'index'])->name('pharmacist.dashboard');
 
-    //-------- pharmacy registration request (propose; admin approval creates the real Pharmacy) --------
+    //-------- pharmacy registration request (propose new or join vacant; admin approval creates/reassigns the real Pharmacy) --------
     Route::get('pharmacy-request', [PharmacyRequestController::class, 'index'])->name('pharmacy_request.index');
     Route::get('pharmacy-request/create', [PharmacyRequestController::class, 'create'])->name('pharmacy_request.create');
     Route::post('pharmacy-request', [PharmacyRequestController::class, 'store'])->name('pharmacy_request.store');
+    Route::post('pharmacy-request/leave', [PharmacyRequestController::class, 'leave'])->name('pharmacy_request.leave');
 });
 
 //=============user portal============
@@ -146,6 +147,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('admin/pharmacist', [PharmacistController::class, 'index'])->name('pharmacist.index');
     Route::get('admin/pharmacist/create', [PharmacistController::class, 'create'])->name('pharmacist.create');
     Route::post('admin/pharmacist', [PharmacistController::class, 'store'])->name('pharmacist.store');
+    Route::get('admin/pharmacist/{id}/review', [PharmacistController::class, 'review'])->name('pharmacist.review');
+    Route::post('admin/pharmacist/{id}/approve', [PharmacistController::class, 'approve'])->name('pharmacist.approve');
+    Route::post('admin/pharmacist/{id}/reject', [PharmacistController::class, 'reject'])->name('pharmacist.reject');
 
     //-------- pharmacies (read-only; created via pharmacy-request approval) --------
     Route::get('admin/pharmacy', [PharmacyController::class, 'index'])->name('pharmacy.index');
@@ -155,7 +159,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('admin/pharmacy-request/{id}/review', [PharmacyRequestController::class, 'review'])->name('admin.pharmacy_request.review');
     Route::post('admin/pharmacy-request/{id}/approve', [PharmacyRequestController::class, 'approve'])->name('admin.pharmacy_request.approve');
     Route::post('admin/pharmacy-request/{id}/reject', [PharmacyRequestController::class, 'reject'])->name('admin.pharmacy_request.reject');
+    Route::post('/pharmacy/{id}/suspend', [PharmacyController::class, 'suspend'])
+        ->name('pharmacy.suspend');
 
+    Route::post('/pharmacy/{id}/activate', [PharmacyController::class, 'activate'])
+        ->name('pharmacy.activate');
     //-------- users --------
     Route::get('admin/user', [UserController::class, 'index'])->name('user.index');
     Route::get('admin/user/create', [UserController::class, 'create'])->name('user.create');

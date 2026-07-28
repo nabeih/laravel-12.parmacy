@@ -5,6 +5,7 @@ namespace App\Http\Controllers\UsersPharmacies;
 use App\Http\Controllers\Controller;
 use App\Models\Pharmacist;
 use App\Models\User;
+use App\Notifications\PharmacistApprovalReviewed;
 use Illuminate\Http\Request;
 
 class PharmacistController extends Controller
@@ -45,5 +46,58 @@ class PharmacistController extends Controller
         Pharmacist::create($validated);
 
         return redirect()->route('pharmacist.index')->with('success', 'تم اضافة الصيدلي بنجاح.');
+    }
+
+    // ---------------------------------------------------------------
+    // Admin approval of a pharmacist's submitted credentials.
+    // ---------------------------------------------------------------
+
+    public function review($id)
+    {
+        $pharmacist = Pharmacist::with('users')->findOrFail($id);
+
+        return view('Pharmacist.review', compact('pharmacist'));
+    }
+
+    public function approve(Request $request, $id)
+    {
+        $pharmacist = Pharmacist::with('users')->findOrFail($id);
+
+        if ($pharmacist->status !== 'pending') {
+            return redirect()->route('pharmacist.index')->with('error', 'تمت مراجعة هذا الصيدلي بالفعل.');
+        }
+
+        $pharmacist->update([
+            'status' => 'approved',
+            'approved_at' => now(),
+            'approved_by' => $request->user()->id,
+        ]);
+
+        $pharmacist->users->notify(new PharmacistApprovalReviewed($pharmacist));
+
+        return redirect()->route('pharmacist.index')->with('success', 'تمت الموافقة على الصيدلي بنجاح.');
+    }
+
+    public function reject(Request $request, $id)
+    {
+        $pharmacist = Pharmacist::with('users')->findOrFail($id);
+
+        if ($pharmacist->status !== 'pending') {
+            return redirect()->route('pharmacist.index')->with('error', 'تمت مراجعة هذا الصيدلي بالفعل.');
+        }
+
+        $validated = $request->validate([
+            'admin_notes' => 'nullable|string|max:1000',
+        ]);
+
+        $pharmacist->update([
+            'status' => 'rejected',
+            'admin_notes' => $validated['admin_notes'] ?? null,
+            'approved_by' => $request->user()->id,
+        ]);
+
+        $pharmacist->users->notify(new PharmacistApprovalReviewed($pharmacist));
+
+        return redirect()->route('pharmacist.index')->with('success', 'تم رفض الصيدلي.');
     }
 }
