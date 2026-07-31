@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Pharmacist;
 use App\Models\User;
 use App\Notifications\NewPharmacistRegistered;
+use App\Services\OtpService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +16,8 @@ use Illuminate\View\View;
 
 class RegisterController extends Controller
 {
+    public function __construct(private readonly OtpService $otpService) {}
+
     public function showUserForm(): View
     {
         return view('auth.user-register');
@@ -35,6 +38,8 @@ class RegisterController extends Controller
             'role' => 'customer',
             'is_active' => true,
         ]);
+
+        $this->otpService->generateAndSend($user);
 
         Auth::login($user);
         $request->session()->regenerate();
@@ -93,6 +98,8 @@ class RegisterController extends Controller
 
         $pharmacist->setRelation('users', $user);
         Notification::send(User::where('role', 'admin')->get(), new NewPharmacistRegistered($pharmacist));
+
+        $this->otpService->generateAndSend($user);
 
         Auth::login($user);
         $request->session()->regenerate();

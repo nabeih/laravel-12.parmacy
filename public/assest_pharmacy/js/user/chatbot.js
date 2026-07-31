@@ -29,12 +29,16 @@ function _renderMessages() {
   area.scrollTop = area.scrollHeight;
 }
 
-function _msgHTML(text, role) {
+function _msgHTML(text, role, demoNote = null) {
   const isUser = role === 'user';
   const escaped = esc(text).replace(/\n/g, '<br>');
+  const note = demoNote
+    ? `<div style="font-size:11px;color:var(--warning);margin-top:4px">⚠️ رد تجريبي (${esc(demoNote)}) — وليس من الذكاء الاصطناعي الفعلي</div>`
+    : '';
   return `<div class="message-wrap ${isUser ? 'sent' : 'received'}">
     ${!isUser ? '<div class="bubble-avatar">🤖</div>' : ''}
     <div class="bubble ${isUser ? 'bubble-sent' : 'bubble-bot'}">${escaped}</div>
+    ${note}
   </div>`;
 }
 
@@ -46,11 +50,11 @@ function _appendUserMessage(text) {
   document.getElementById('suggestions').style.display = 'none';
 }
 
-function _appendBotMessage(text) {
+function _appendBotMessage(text, demoNote = null) {
   _history.push({ role:'assistant', text, timestamp: Date.now() });
   _saveHistory();
   const area = document.getElementById('bot-messages');
-  area.insertAdjacentHTML('beforeend', _msgHTML(text, 'assistant'));
+  area.insertAdjacentHTML('beforeend', _msgHTML(text, 'assistant', demoNote));
   area.scrollTop = area.scrollHeight;
 }
 
@@ -89,9 +93,9 @@ async function _onUserSend(text) {
 
   // Build context for API: last 10 exchanges
   const historyForApi = _history.slice(-10).map(h => ({ role: h.role, content: h.text }));
-  const response = await chatWithBot(historyForApi, text);
+  const { reply, source, reason } = await chatWithBot(historyForApi, text);
   _removeTyping(typingId);
-  _appendBotMessage(response);
+  _appendBotMessage(reply, source === 'demo' ? reason : null);
 }
 
 function sendSuggestion(btn) {

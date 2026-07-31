@@ -15,6 +15,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\EnsureRole::class,
             'approved.pharmacy' => \App\Http\Middleware\EnsureApprovedPharmacy::class,
         ]);
+
+        // These OTP endpoints take email/otp explicitly rather than relying on
+        // the session, so they're safe to exempt for JSON/API-style clients (e.g. Postman).
+        $middleware->validateCsrfTokens(except: [
+            'verify-email',
+            'resend-verification-code',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

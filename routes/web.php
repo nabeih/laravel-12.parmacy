@@ -1,7 +1,12 @@
 <?php
 
+use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Portal\AiController;
+use App\Http\Controllers\Portal\DoseController;
+use App\Http\Controllers\Portal\OrderController;
+use App\Http\Controllers\Portal\PharmacistOrderController;
 use App\Http\Controllers\Catalog\ActiveIngredientController;
 use App\Http\Controllers\Catalog\CategoryController;
 use App\Http\Controllers\Catalog\DosageFormController;
@@ -58,6 +63,17 @@ Route::post('register/user', [RegisterController::class, 'registerUser'])->name(
 Route::get('register/pharmacist', [RegisterController::class, 'showPharmacistForm'])->name('register.pharmacist');
 Route::post('register/pharmacist', [RegisterController::class, 'registerPharmacist'])->name('register.pharmacist.submit');
 
+//=============email verification (OTP)============
+Route::get('verify-email', [EmailVerificationController::class, 'page'])->name('verification.page');
+
+Route::post('verify-email', [EmailVerificationController::class, 'verify'])
+    ->middleware('throttle:otp-verify')
+    ->name('verification.verify');
+
+Route::post('resend-verification-code', [EmailVerificationController::class, 'resend'])
+    ->middleware('throttle:otp-resend')
+    ->name('verification.resend');
+
 Route::get('/nav', function () {
     return view('layouts.nav_admin');
 });
@@ -81,6 +97,30 @@ Route::middleware(['auth', 'role:pharmacist'])->group(function () {
 Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('user/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
     Route::get('user/search', [CatalogController::class, 'index'])->name('user.search');
+    Route::get('user/pharmacy/{pharmacy}', [CatalogController::class, 'show'])->name('user.pharmacy.show');
+
+    //-------- prescription scanning + AI assistant --------
+    Route::get('user/scanner', [AiController::class, 'scannerPage'])->name('user.scanner');
+    Route::get('user/assistant', [AiController::class, 'assistantPage'])->name('user.assistant');
+
+    //-------- my dosages --------
+    Route::get('user/doses', [DoseController::class, 'page'])->name('user.doses');
+
+    //-------- my orders / checkout --------
+    Route::get('user/checkout', [OrderController::class, 'checkoutPage'])->name('user.checkout');
+    Route::get('user/orders', [OrderController::class, 'page'])->name('user.orders');
+
+    //-------- JSON endpoints backing the pages above (still session-auth + CSRF, not a separate API stack) --------
+    Route::get('api/user/doses', [DoseController::class, 'index'])->name('api.doses.index');
+    Route::post('api/user/doses', [DoseController::class, 'store'])->name('api.doses.store');
+    Route::put('api/user/doses/{dose}', [DoseController::class, 'update'])->name('api.doses.update');
+    Route::delete('api/user/doses/{dose}', [DoseController::class, 'destroy'])->name('api.doses.destroy');
+
+    Route::get('api/orders', [OrderController::class, 'index'])->name('api.orders.index');
+    Route::post('api/orders', [OrderController::class, 'store'])->name('api.orders.store');
+
+    Route::post('api/ai/chat', [AiController::class, 'chat'])->name('api.ai.chat');
+    Route::post('api/ai/scan-prescription', [AiController::class, 'scanPrescription'])->name('api.ai.scan');
 });
 
 //=============manager portal (admin)============
@@ -204,4 +244,8 @@ Route::middleware(['auth', 'role:pharmacist', 'approved.pharmacy'])->group(funct
     Route::get('pharmacist/medicine-request', [MedicineRequestController::class, 'index'])->name('medicine_request.index');
     Route::get('pharmacist/medicine-request/create', [MedicineRequestController::class, 'create'])->name('medicine_request.create');
     Route::post('pharmacist/medicine-request', [MedicineRequestController::class, 'store'])->name('medicine_request.store');
+
+    //-------- customer orders (cash-on-delivery requests placed against this pharmacy) --------
+    Route::get('pharmacist/orders', [PharmacistOrderController::class, 'index'])->name('pharmacist_order.index');
+    Route::post('pharmacist/orders/{order}/status', [PharmacistOrderController::class, 'updateStatus'])->name('pharmacist_order.updateStatus');
 });

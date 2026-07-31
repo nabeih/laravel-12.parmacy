@@ -117,12 +117,12 @@ function renderCartDrawer() {
         <div style="color:var(--primary);font-weight:700;margin-top:2px">₪${item.price.toFixed(2)}</div>
       </div>
       <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
-        <button onclick="updateQty('${item.medicineId}',${item.qty - 1})"
+        <button onclick="updateQty(${item.medicineId},${item.qty - 1})"
           style="width:28px;height:28px;border:1px solid var(--border);border-radius:50%;background:white;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">−</button>
         <span style="font-weight:600;min-width:20px;text-align:center">${item.qty}</span>
-        <button onclick="updateQty('${item.medicineId}',${item.qty + 1})"
+        <button onclick="updateQty(${item.medicineId},${item.qty + 1})"
           style="width:28px;height:28px;border:1px solid var(--border);border-radius:50%;background:white;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">+</button>
-        <button onclick="removeFromCart('${item.medicineId}')"
+        <button onclick="removeFromCart(${item.medicineId})"
           style="color:#ef4444;background:none;border:none;cursor:pointer;font-size:18px;padding:0 4px">✕</button>
       </div>
     </div>`).join('');
@@ -152,7 +152,7 @@ function injectCartDrawer() {
           <span style="color:var(--text-muted)">رسوم التوصيل</span>
           <span>₪5.00</span>
         </div>
-        <button onclick="window.location.href='checkout.html'"
+        <button onclick="window.location.href='/user/checkout'"
           style="width:100%;background:var(--primary);color:white;border:none;border-radius:30px;padding:14px;font-size:15px;cursor:pointer;font-family:inherit;font-weight:600">
           ✓ إتمام الطلب
         </button>

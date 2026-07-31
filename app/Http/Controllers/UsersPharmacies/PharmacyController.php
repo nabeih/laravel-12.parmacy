@@ -14,24 +14,49 @@ class PharmacyController extends Controller
      */
     public function index()
     {
-        $pharmacies = Pharmacy::with('pharmacists.users')->latest()->get();
+        $pharmacies = Pharmacy::with(['pharmacists.users', 'pharmacyRequest'])->latest()->get();
         return view('Pharmacy.index', compact('pharmacies'));
     }
 
+    // public function suspend($id)
+    // {
+    //     $pharmacy = Pharmacy::findOrFail($id);
+    //     $pharmacy->status = 'suspended';
+    //     $pharmacy->save();
+
+    //     return redirect()->route('pharmacy.index')->with('success', 'تم ايقاف الصيدلية.');
+    // }
     public function suspend($id)
     {
         $pharmacy = Pharmacy::findOrFail($id);
-        $pharmacy->status = 'suspended';
-        $pharmacy->save();
 
-        return redirect()->route('pharmacy.index')->with('success', 'Pharmacy suspended successfully.');
+        $pharmacy->update([
+            'status' => 'suspended',
+        ]);
+
+        return redirect()
+            ->route('pharmacy.index')
+            ->with('success', 'تم إيقاف الصيدلية بنجاح.');
     }
+
+    // public function activate($id)
+    // {
+    //     $pharmacy = Pharmacy::findOrFail($id);
+    //     $pharmacy->status = 'opne';
+    //     $pharmacy->save();
+
+    //     return redirect()->route('pharmacy.index')->with('success', 'Pharmacy activated successfully.');
+    // }
     public function activate($id)
     {
         $pharmacy = Pharmacy::findOrFail($id);
-        $pharmacy->status = 'opne';
-        $pharmacy->save();
 
-        return redirect()->route('pharmacy.index')->with('success', 'Pharmacy activated successfully.');
+        $pharmacy->update([
+            'status' => 'opne',
+        ]);
+
+        return redirect()
+            ->route('pharmacy.index')
+            ->with('success', 'تم إعادة تفعيل الصيدلية.');
     }
 }

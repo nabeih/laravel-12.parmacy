@@ -1,42 +1,26 @@
 // ── Laravel API Base URL ───────────────────────────────────
-const LARAVEL_API = 'http://localhost:8000/api';
-// TODO: Change to your production Laravel URL before deployment
+const LARAVEL_API = '/api';
 
 // ── Prescription Scanner ───────────────────────────────────
 async function scanPrescription(base64Image, mimeType) {
-  // Strategy 1: Vision API via Laravel
   try {
-    const res = await fetch(`${LARAVEL_API}/ai/scan-prescription`, {
+    const { ok, data } = await phFetch(`${LARAVEL_API}/ai/scan-prescription`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ image: base64Image, mimeType })
     });
-    if (res.ok) {
-      const data = await res.json();
-      if (data.medicines?.length) return data.medicines;
-    }
+    if (ok && data?.medicines) return { medicines: data.medicines, source: data.source || 'gemini' };
   } catch (_) {}
 
-  // Strategy 2: OCR → Extract fallback
-  try {
-    const res2 = await fetch(`${LARAVEL_API}/ai/ocr-then-extract`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image: base64Image })
-    });
-    if (res2.ok) {
-      const data2 = await res2.json();
-      if (data2.medicines?.length) return data2.medicines;
-    }
-  } catch (_) {}
-
-  // Demo mode: simulate 2s processing then return mock results
+  // Demo fallback: AI service unreachable or not configured yet.
   await new Promise(r => setTimeout(r, 2000));
-  return [
-    { nameAr: 'أموكسيسيلين', nameEn: 'Amoxicillin',  availableIn: 4 },
-    { nameAr: 'باراسيتامول', nameEn: 'Paracetamol',   availableIn: 12 },
-    { nameAr: 'أوميبرازول',  nameEn: 'Omeprazole',    availableIn: 2 }
-  ];
+  return {
+    source: 'demo',
+    medicines: [
+      { name: 'أموكسيسيلين (Amoxicillin)', dosage: '500mg', frequency: 'كل 8 ساعات', duration: '7 أيام', notes: '' },
+      { name: 'باراسيتامول (Paracetamol)',  dosage: '500mg', frequency: 'عند الحاجة', duration: '—',     notes: '' },
+      { name: 'أوميبرازول (Omeprazole)',    dosage: '20mg',  frequency: 'مرة يومياً',  duration: '14 يوم', notes: 'قبل الفطور بـ30 دقيقة' }
+    ]
+  };
 }
 
 // ── Pharmacy Chatbot ───────────────────────────────────────
@@ -48,17 +32,19 @@ async function scanPrescription(base64Image, mimeType) {
 async function chatWithBot(messagesHistory, newMessage) {
   // Try real API first
   try {
-    const res = await fetch(`${LARAVEL_API}/ai/chat`, {
+    const { ok, status, data } = await phFetch(`${LARAVEL_API}/ai/chat`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages: messagesHistory.slice(-10), message: newMessage })
     });
-    if (res.ok) {
-      const data = await res.json();
-      if (data.reply) return data.reply;
-    }
+    if (ok && data?.reply) return { reply: data.reply, source: 'gemini' };
+    if (status === 502) return { reply: await _demoReply(newMessage), source: 'demo', reason: data?.message || 'الخدمة الذكية غير متاحة حالياً.' };
   } catch (_) {}
 
+  // Network/unexpected failure: fall back the same way.
+  return { reply: await _demoReply(newMessage), source: 'demo', reason: 'تعذر الاتصال بالخادم.' };
+}
+
+async function _demoReply(newMessage) {
   // Demo mode: smart keyword matching
   await new Promise(r => setTimeout(r, 900 + Math.random() * 800));
 

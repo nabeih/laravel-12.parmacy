@@ -17,11 +17,21 @@ class Pharmacy extends Model
 
     public function pharmacists()
     {
-        return $this->belongsTo(Pharmacist::class);
+        return $this->belongsTo(Pharmacist::class, 'pharmacist_id');
     }
 
     public function assignments()
     {
         return $this->hasMany(PharmacyAssignment::class)->orderByDesc('started_at');
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function pharmacyRequest()
+    {
+        return $this->hasOne(PharmacyRequest::class, 'pharmacy_id')->latestOfMany();
     }
 }

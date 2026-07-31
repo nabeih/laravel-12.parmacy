@@ -36,6 +36,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'email_verification_otp_hash',
     ];
 
     /**
@@ -47,6 +48,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'email_verification_otp_expires_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -54,5 +56,15 @@ class User extends Authenticatable
     public function pharmacists(){
 
         return $this->hasOne(Pharmacist::class);
+    }
+
+    public function doses()
+    {
+        return $this->hasMany(Dose::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 }

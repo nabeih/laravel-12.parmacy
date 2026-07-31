@@ -65,6 +65,8 @@
                         class="portal-nav-link {{ request()->routeIs('pharmacy_request.*') ? 'active' : '' }}">🏪 صيدليتي</a>
                 @endif
                 @if($isOperational)
+                    <a href="{{ route('pharmacist_order.index') }}"
+                        class="portal-nav-link {{ request()->routeIs('pharmacist_order.*') ? 'active' : '' }}">🛒 طلبات العملاء</a>
                     <a href="{{ route('purchase.index') }}"
                         class="portal-nav-link {{ request()->routeIs('purchase.*') ? 'active' : '' }}">🧾 فواتير الشراء</a>
                     <a href="{{ route('batch.index') }}"

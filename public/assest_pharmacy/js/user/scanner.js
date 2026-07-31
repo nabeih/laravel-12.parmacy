@@ -102,7 +102,7 @@ function _renderResults(result) {
 
 function addMedToDoses(name, dosage) {
   const params = new URLSearchParams({ name, dosage });
-  window.location.href = `doses.html?${params.toString()}`;
+  window.location.href = `/user/doses?${params.toString()}`;
 }
 
 function _clearAll() {

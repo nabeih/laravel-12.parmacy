@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,5 +24,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
+
+        RateLimiter::for('otp-verify', function (Request $request) {
+            return Limit::perMinute(6)->by(strtolower((string) $request->input('email')).'|'.$request->ip());
+        });
+
+        RateLimiter::for('otp-resend', function (Request $request) {
+            return Limit::perMinute(1)->by(strtolower((string) $request->input('email')).'|'.$request->ip());
+        });
     }
 }

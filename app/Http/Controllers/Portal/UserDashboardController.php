@@ -9,6 +9,15 @@ class UserDashboardController extends Controller
 {
     public function index(Request $request)
     {
-        return view('user.dashboard', ['user' => $request->user()]);
+        $user = $request->user();
+
+        $activeDoses = $user->doses()->where('active', true)->get();
+        $recentOrders = $user->orders()->with('pharmacy')->latest()->take(3)->get();
+
+        return view('user.dashboard', [
+            'user' => $user,
+            'activeDoses' => $activeDoses,
+            'recentOrders' => $recentOrders,
+        ]);
     }
 }

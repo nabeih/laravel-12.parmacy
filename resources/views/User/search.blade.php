@@ -38,6 +38,7 @@
                     @if ($pharmacy->opening_time && $pharmacy->closing_time)
                         <div class="small text-muted">🕒 {{ $pharmacy->opening_time }} - {{ $pharmacy->closing_time }}</div>
                     @endif
+                    <a href="{{ route('user.pharmacy.show', $pharmacy) }}" class="btn btn-outline-primary btn-sm w-100 mt-2">💊 عرض الأدوية المتوفرة</a>
                 </div>
             </div>
         </div>

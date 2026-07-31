@@ -9,6 +9,24 @@
     <div class="alert alert-danger">{{ session('error') }}</div>
 @endif
 
+{{-- @if($pharmacy->status == 'open')
+<form action="{{ route('pharmacy.suspend', $pharmacy->id) }}" method="POST" style="display:inline">
+    @csrf
+    <button class="admin-btn admin-btn-danger" onclick="return confirm('هل تريد إيقاف هذه الصيدلية؟')">
+        إيقاف
+    </button>
+</form>
+@endif
+
+@if($pharmacy->status == 'suspended')
+<form action="{{ route('pharmacy.activate', $pharmacy->id) }}" method="POST" style="display:inline">
+    @csrf
+    <button class="admin-btn admin-btn-success">
+        إعادة تفعيل
+    </button>
+</form>
+@endif --}}
+
 <div class="admin-page-header">
     <div>
         <h1 class="admin-page-title">صيدليتي</h1>
@@ -27,7 +45,8 @@
         <div class="admin-empty">
             <div class="admin-empty-icon">🏪</div>
             <div class="admin-empty-title">لا تدير أي صيدلية حالياً</div>
-            <a href="{{ route('pharmacy_request.create') }}" class="admin-btn admin-btn-primary" style="margin-top:12px">+ تسجيل صيدلية / الانضمام إلى صيدلية شاغرة</a>
+            <a href="{{ route('pharmacy_request.create') }}" class="admin-btn admin-btn-primary" style="margin-top:12px">+
+                تسجيل صيدلية / الانضمام إلى صيدلية شاغرة</a>
         </div>
     @elseif($pharmacyRequest->status === 'pending')
         <div class="admin-empty">
@@ -42,14 +61,27 @@
             @if($pharmacyRequest->admin_notes)
                 <p class="text-muted">السبب: {{ $pharmacyRequest->admin_notes }}</p>
             @endif
-            <a href="{{ route('pharmacy_request.create') }}" class="admin-btn admin-btn-primary" style="margin-top:12px">إعادة تقديم الطلب</a>
+            <a href="{{ route('pharmacy_request.create') }}" class="admin-btn admin-btn-primary"
+                style="margin-top:12px">إعادة تقديم الطلب</a>
         </div>
     @else
         <div class="admin-section-title">✅ صيدليتك الحالية</div>
-        <div class="admin-info-row"><div class="admin-info-label">الاسم</div><div class="admin-info-value">{{ $pharmacyRequest->pharmacy->name_ar ?? '-' }}</div></div>
-        <div class="admin-info-row"><div class="admin-info-label">الهاتف</div><div class="admin-info-value">{{ $pharmacyRequest->pharmacy->phone ?? '-' }}</div></div>
-        <div class="admin-info-row"><div class="admin-info-label">العنوان</div><div class="admin-info-value">{{ $pharmacyRequest->pharmacy->address ?? '-' }}</div></div>
-        <div class="admin-info-row"><div class="admin-info-label">الحالة</div><div class="admin-info-value">{{ $pharmacyRequest->pharmacy->status ?? '-' }}</div></div>
+        <div class="admin-info-row">
+            <div class="admin-info-label">الاسم</div>
+            <div class="admin-info-value">{{ $pharmacyRequest->pharmacy->name_ar ?? '-' }}</div>
+        </div>
+        <div class="admin-info-row">
+            <div class="admin-info-label">الهاتف</div>
+            <div class="admin-info-value">{{ $pharmacyRequest->pharmacy->phone ?? '-' }}</div>
+        </div>
+        <div class="admin-info-row">
+            <div class="admin-info-label">العنوان</div>
+            <div class="admin-info-value">{{ $pharmacyRequest->pharmacy->address ?? '-' }}</div>
+        </div>
+        <div class="admin-info-row">
+            <div class="admin-info-label">الحالة</div>
+            <div class="admin-info-value">{{ $pharmacyRequest->pharmacy->status ?? '-' }}</div>
+        </div>
 
         <form action="{{ route('pharmacy_request.leave') }}" method="POST" style="margin-top:16px"
             onsubmit="return confirm('هل أنت متأكد من مغادرة هذه الصيدلية؟ ستفقد صلاحية الوصول إلى المشتريات والمبيعات حتى تنضم لصيدلية أخرى.');">

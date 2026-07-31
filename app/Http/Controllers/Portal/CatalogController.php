@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Models\Batch;
 use App\Models\Medicine;
 use App\Models\Pharmacy;
 use Illuminate\Http\Request;
@@ -50,5 +51,27 @@ class CatalogController extends Controller
             ->paginate(9, ['*'], 'medicines_page');
 
         return view('User.search', compact('pharmacies', 'medicines', 'q'));
+    }
+
+    public function show(Pharmacy $pharmacy): View
+    {
+        Batch::deactivateExpired();
+
+        $items = Batch::query()
+            ->where('pharmacy_id', $pharmacy->id)
+            ->where('is_active', true)
+            ->where('quantity', '>', 0)
+            ->with('medicines')
+            ->get()
+            ->groupBy('medicine_id')
+            ->map(fn ($batches) => [
+                'medicine' => $batches->first()->medicines,
+                'quantity' => $batches->sum('quantity'),
+                'price' => $batches->min('selling_price'),
+            ])
+            ->filter(fn ($item) => $item['medicine'] !== null)
+            ->values();
+
+        return view('User.pharmacy', compact('pharmacy', 'items'));
     }
 }

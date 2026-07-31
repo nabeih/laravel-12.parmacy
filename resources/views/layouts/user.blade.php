@@ -4,11 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title') — بوابة المستخدم</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assest_pharmacy/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assest_pharmacy/css/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('assest_pharmacy/css/main.css') }}">
+    <link rel="stylesheet" href="{{ asset('assest_pharmacy/css/chat.css') }}">
     <style>
         body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
         .portal-sidebar {
@@ -59,6 +62,14 @@
                 <a href="{{ route('user.search') }}"
                     class="portal-nav-link {{ request()->routeIs('user.search') ? 'active' : '' }}">🔍 الصيدليات
                     والأدوية</a>
+                <a href="{{ route('user.scanner') }}"
+                    class="portal-nav-link {{ request()->routeIs('user.scanner') ? 'active' : '' }}">🔍 مسح الروشتة</a>
+                <a href="{{ route('user.assistant') }}"
+                    class="portal-nav-link {{ request()->routeIs('user.assistant') ? 'active' : '' }}">🤖 المساعد الذكي</a>
+                <a href="{{ route('user.doses') }}"
+                    class="portal-nav-link {{ request()->routeIs('user.doses') ? 'active' : '' }}">💊 جرعاتي</a>
+                <a href="{{ route('user.orders') }}"
+                    class="portal-nav-link {{ request()->routeIs('user.orders') ? 'active' : '' }}">🛒 طلباتي</a>
             </nav>
             <div class="mt-auto pt-4 border-top border-light border-opacity-25">
                 <div class="fw-semibold">{{ auth()->user()->name ?? 'مستخدم' }}</div>
@@ -76,6 +87,25 @@
     <script src="{{ asset('assest_pharmacy/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('assest_pharmacy/js/sidebar-toggle.js') }}"></script>
     <script src="{{ asset('assest_pharmacy/js/notification-bell.js') }}"></script>
+    <script src="{{ asset('assest_pharmacy/js/mock-data.js') }}"></script>
+    <script>
+        // Shared same-origin fetch helper: attaches the session CSRF token so
+        // POST/PUT/DELETE calls from the portal pages pass Laravel's VerifyCsrfToken.
+        async function phFetch(url, options = {}) {
+            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const headers = {
+                'Accept': 'application/json',
+                ...(options.body && !(options.body instanceof FormData) ? { 'Content-Type': 'application/json' } : {}),
+                ...(token ? { 'X-CSRF-TOKEN': token } : {}),
+                ...(options.headers || {}),
+            };
+            const res = await fetch(url, { ...options, headers, credentials: 'same-origin' });
+            let data = null;
+            try { data = await res.json(); } catch (_) {}
+            return { ok: res.ok, status: res.status, data };
+        }
+    </script>
+    @stack('scripts')
 </body>
 
 </html>

@@ -60,6 +60,25 @@
                             @endif
                         </td>
                         <td>{{ $pharmacy->is_verified ? 'نعم' : 'لا' }}</td>
+                        <td>
+                            @if($pharmacy->pharmacyRequest)
+                                <a href="{{ route('admin.pharmacy_request.review', $pharmacy->pharmacyRequest->id) }}"
+                                    class="admin-btn admin-btn-sm admin-btn-outline">🔍 عرض</a>
+                            @endif
+                            @if($pharmacy->status == 'suspended')
+                                <form action="{{ route('pharmacy.activate', $pharmacy->id) }}" method="POST"
+                                    style="display:inline-block">
+                                    @csrf
+                                    <button type="submit" class="admin-btn admin-btn-sm admin-btn-success">✅ تفعيل</button>
+                                </form>
+                            @else
+                                <form action="{{ route('pharmacy.suspend', $pharmacy->id) }}" method="POST"
+                                    style="display:inline-block">
+                                    @csrf
+                                    <button type="submit" class="admin-btn admin-btn-sm admin-btn-danger">⛔ إيقاف</button>
+                                </form>
+                            @endif
+                        </td>
                     </tr>
                 @empty
                     <tr>
