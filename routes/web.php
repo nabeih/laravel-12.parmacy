@@ -35,7 +35,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('testDB', function () {
+Route::get('/testDB', function () {
     try {
         $dbName = DB::connection()->getDatabaseName();
         return "Connected successfully to database: " . $dbName;
