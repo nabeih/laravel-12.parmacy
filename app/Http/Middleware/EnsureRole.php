@@ -13,7 +13,16 @@ class EnsureRole
         if (! $request->user() || $request->user()->role !== $role) {
             abort(403, 'غير مصرح لك بالوصول إلى هذه الصفحة.');
         }
+        $response = $next($request);
 
-        return $next($request);
+        $response->headers->set(
+            'Cache-Control',
+            'no-store, no-cache, must-revalidate, max-age=0'
+        );
+
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', 'Fri, 01 Jan 1990 00:00:00 GMT');
+
+        return $response;
     }
 }

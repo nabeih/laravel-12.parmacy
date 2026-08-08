@@ -83,5 +83,5 @@ class LoginController extends Controller
             'pharmacist' => redirect()->route('login.pharmacist'),
             default => redirect()->route('login.user'),
         };
-    }
+    }   
 }

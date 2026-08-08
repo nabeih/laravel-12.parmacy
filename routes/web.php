@@ -3,10 +3,6 @@
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Portal\AiController;
-use App\Http\Controllers\Portal\DoseController;
-use App\Http\Controllers\Portal\OrderController;
-use App\Http\Controllers\Portal\PharmacistOrderController;
 use App\Http\Controllers\Catalog\ActiveIngredientController;
 use App\Http\Controllers\Catalog\CategoryController;
 use App\Http\Controllers\Catalog\DosageFormController;
@@ -15,8 +11,12 @@ use App\Http\Controllers\Catalog\MedicineController;
 use App\Http\Controllers\Catalog\MedicineRequestController;
 use App\Http\Controllers\Manager\DashboardController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Portal\AiController;
 use App\Http\Controllers\Portal\CatalogController;
+use App\Http\Controllers\Portal\DoseController;
+use App\Http\Controllers\Portal\OrderController;
 use App\Http\Controllers\Portal\PharmacistDashboardController;
+use App\Http\Controllers\Portal\PharmacistOrderController;
 use App\Http\Controllers\Portal\UserDashboardController;
 use App\Http\Controllers\PurchasingInventory\BatchController;
 use App\Http\Controllers\PurchasingInventory\PurchaseController;
@@ -27,11 +27,21 @@ use App\Http\Controllers\UsersPharmacies\PharmacistController;
 use App\Http\Controllers\UsersPharmacies\PharmacyController;
 use App\Http\Controllers\UsersPharmacies\PharmacyRequestController;
 use App\Http\Controllers\UsersPharmacies\UserController;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+
 
 //=============landing / auth============
 Route::get('/', function () {
     return view('welcome');
+});
+Route::get('testDB', function () {
+    try {
+        $dbName = DB::connection()->getDatabaseName();
+        return "Connected successfully to database: " . $dbName;
+    } catch (\Exception $e) {
+        return "Connection failed: " . $e->getMessage();
+    }
 });
 
 Route::get('/phar', function () {
@@ -47,7 +57,7 @@ Route::post('login/pharmacist', [LoginController::class, 'pharmacistLogin'])->na
 Route::get('login/user', [LoginController::class, 'showUserLogin'])->name('login.user');
 Route::post('login/user', [LoginController::class, 'userLogin'])->name('login.user.submit');
 
-Route::post('logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
+Route::post('logout', [LoginController::class, 'logout'])->name('logout')->middleware(['auth', 'approved.pharmacy', 'prevent-back-history']);
 
 //=============notifications (any authenticated role)============
 Route::middleware(['auth'])->group(function () {

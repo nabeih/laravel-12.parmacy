@@ -13,33 +13,102 @@
     <link rel="stylesheet" href="{{ asset('assest_pharmacy/css/main.css') }}">
     <link rel="stylesheet" href="{{ asset('assest_pharmacy/css/chat.css') }}">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
-        .portal-sidebar {
-            width: 250px; background: #7e22ce; min-height: 100vh; position: fixed; right: 0; top: 0;
-            display: flex; flex-direction: column; z-index: 100; transition: transform .25s ease;
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f1f5f9;
         }
-        .portal-main { margin-right: 250px; padding: 64px 28px 28px; transition: margin-right .25s ease; }
-        .portal-nav-link { color: #f3e8ff; padding: 10px 16px; border-radius: 8px; display: block; text-decoration: none; margin-bottom: 4px; }
-        .portal-nav-link:hover, .portal-nav-link.active { background: rgba(255,255,255,.15); color: #fff; }
+
+        .portal-sidebar {
+            width: 250px;
+            background: #7e22ce;
+            min-height: 100vh;
+            position: fixed;
+            right: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: transform .25s ease;
+        }
+
+        .portal-main {
+            margin-right: 250px;
+            padding: 64px 28px 28px;
+            transition: margin-right .25s ease;
+        }
+
+        .portal-nav-link {
+            color: #f3e8ff;
+            padding: 10px 16px;
+            border-radius: 8px;
+            display: block;
+            text-decoration: none;
+            margin-bottom: 4px;
+        }
+
+        .portal-nav-link:hover,
+        .portal-nav-link.active {
+            background: rgba(255, 255, 255, .15);
+            color: #fff;
+        }
 
         .portal-sidebar-toggle {
-            display: flex; position: fixed; top: 14px; left: 14px; z-index: 110;
-            width: 42px; height: 42px; align-items: center; justify-content: center;
-            border-radius: 10px; border: none; background: #7e22ce; color: #fff;
-            font-size: 20px; line-height: 1; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,.25);
+            display: flex;
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            z-index: 110;
+            width: 42px;
+            height: 42px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            border: none;
+            background: #7e22ce;
+            color: #fff;
+            font-size: 20px;
+            line-height: 1;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .25);
         }
-        .portal-sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,.5); z-index: 99; }
+
+        .portal-sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, .5);
+            z-index: 99;
+        }
 
         /* Explicitly hidden by the user — content reflows to fill the space at any screen size. */
-        body.sidebar-hidden .portal-sidebar { transform: translateX(100%); }
-        body.sidebar-hidden .portal-main { margin-right: 0; }
+        body.sidebar-hidden .portal-sidebar {
+            transform: translateX(100%);
+        }
+
+        body.sidebar-hidden .portal-main {
+            margin-right: 0;
+        }
 
         @media (max-width: 768px) {
+
             /* Small screens: sidebar defaults to hidden and, when shown, overlays the content. */
-            .portal-sidebar { transform: translateX(100%); }
-            body:not(.sidebar-hidden) .portal-sidebar { transform: translateX(0); box-shadow: -8px 0 32px rgba(0,0,0,.25); }
-            body:not(.sidebar-hidden) .portal-sidebar-backdrop { display: block; }
-            .portal-main { margin-right: 0; padding: 64px 16px 16px; }
+            .portal-sidebar {
+                transform: translateX(100%);
+            }
+
+            body:not(.sidebar-hidden) .portal-sidebar {
+                transform: translateX(0);
+                box-shadow: -8px 0 32px rgba(0, 0, 0, .25);
+            }
+
+            body:not(.sidebar-hidden) .portal-sidebar-backdrop {
+                display: block;
+            }
+
+            .portal-main {
+                margin-right: 0;
+                padding: 64px 16px 16px;
+            }
         }
     </style>
 </head>
@@ -65,7 +134,8 @@
                 <a href="{{ route('user.scanner') }}"
                     class="portal-nav-link {{ request()->routeIs('user.scanner') ? 'active' : '' }}">🔍 مسح الروشتة</a>
                 <a href="{{ route('user.assistant') }}"
-                    class="portal-nav-link {{ request()->routeIs('user.assistant') ? 'active' : '' }}">🤖 المساعد الذكي</a>
+                    class="portal-nav-link {{ request()->routeIs('user.assistant') ? 'active' : '' }}">🤖 المساعد
+                    الذكي</a>
                 <a href="{{ route('user.doses') }}"
                     class="portal-nav-link {{ request()->routeIs('user.doses') ? 'active' : '' }}">💊 جرعاتي</a>
                 <a href="{{ route('user.orders') }}"
@@ -76,7 +146,8 @@
                 <div class="small opacity-75 mb-3">{{ auth()->user()->email ?? '' }}</div>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="btn btn-light btn-sm w-100">🚪 تسجيل الخروج</button>
+
+                    <button type="submit" class="btn btn-light btn-sm w-100">🚪 000تسجيل الخروج</button>
                 </form>
             </div>
         </aside>
@@ -101,7 +172,7 @@
             };
             const res = await fetch(url, { ...options, headers, credentials: 'same-origin' });
             let data = null;
-            try { data = await res.json(); } catch (_) {}
+            try { data = await res.json(); } catch (_) { }
             return { ok: res.ok, status: res.status, data };
         }
     </script>

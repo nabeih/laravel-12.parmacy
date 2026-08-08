@@ -27,7 +27,7 @@ class EnsureApprovedPharmacy
         if (!$pharmacist || $pharmacist->status !== 'approved' || !$pharmacist->pharmacies) {
             return redirect()->route('pharmacist.dashboard')
                 ->with('error', 'يجب أن يتم اعتماد حسابك وربطه بصيدلية قبل الوصول إلى هذه الصفحة.');
-        }
+        }     
 
         $pharmacy = $pharmacist->pharmacies;
 
