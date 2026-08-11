@@ -32,9 +32,9 @@ use Illuminate\Support\Facades\Route;
 
 
 //=============landing / auth============
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 Route::get('/test-db', function () {
     try {
@@ -45,7 +45,7 @@ Route::get('/test-db', function () {
     }
 });
 
-Route::get('/phar', function () {
+Route::get('/', function () {
     return view('login');
 })->name('login');
 
