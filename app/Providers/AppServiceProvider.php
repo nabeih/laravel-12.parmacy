@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // إجبار كل الروابط و الـ Assets على استخدام HTTPS في بيئة الإنتاج
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+        }
         Paginator::useBootstrapFive();
 
         RateLimiter::for('otp-verify', function (Request $request) {
