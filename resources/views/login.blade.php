@@ -17,12 +17,6 @@
 </head>
 
 <body>
-    Scheme: {{ request()->getScheme() }} <br>
-    Host: {{ request()->getSchemeAndHttpHost() }} <br>
-    Forwarded Proto: {{ request()->header('X-Forwarded-Proto') }} <br>
-    HTTPS: {{ request()->server('HTTPS') }} <br>
-    Form URL: {{ route('login') }}
-
 
     <div class="landing-page">
         <div class="landing-logo">
