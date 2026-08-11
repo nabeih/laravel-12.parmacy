@@ -14,7 +14,7 @@ class UserDashboardController extends Controller
         $activeDoses = $user->doses()->where('active', true)->get();
         $recentOrders = $user->orders()->with('pharmacy')->latest()->take(3)->get();
 
-        return view('user.dashboard', [
+        return view('User.dashboard', [
             'user' => $user,
             'activeDoses' => $activeDoses,
             'recentOrders' => $recentOrders,
