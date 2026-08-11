@@ -14,18 +14,34 @@
             background: linear-gradient(135deg, #1e3a5f, #2563eb);
             min-height: 100vh;
         }
+
         .login-card {
             border: none;
             border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,.25);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, .25);
         }
+
         .login-icon {
-            width: 64px; height: 64px; border-radius: 50%;
-            background: #dbeafe; display: flex; align-items: center; justify-content: center;
-            font-size: 30px; margin: 0 auto 12px;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #dbeafe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin: 0 auto 12px;
         }
-        .btn-manager { background: #1e3a5f; border-color: #1e3a5f; }
-        .btn-manager:hover { background: #162d4a; border-color: #162d4a; }
+
+        .btn-manager {
+            background: #1e3a5f;
+            border-color: #1e3a5f;
+        }
+
+        .btn-manager:hover {
+            background: #162d4a;
+            border-color: #162d4a;
+        }
     </style>
 </head>
 
@@ -45,7 +61,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('login.manager.submit') }}">
+                <form method="POST" action="/login/manager">
                     @csrf
                     <div class="mb-3">
                         <label class="form-label">البريد الإلكتروني</label>
@@ -60,11 +76,13 @@
                         <input class="form-check-input" type="checkbox" name="remember" id="remember">
                         <label class="form-check-label" for="remember">تذكرني</label>
                     </div>
-                    <button type="submit" class="btn btn-manager w-100 text-white fw-semibold py-2">دخول إلى لوحة الإدارة</button>
+                    <button type="submit" class="btn btn-manager w-100 text-white fw-semibold py-2">دخول إلى لوحة
+                        الإدارة</button>
                 </form>
 
                 <div class="text-center mt-3">
-                    <a href="{{ route('login') }}" class="small text-decoration-none">&larr; العودة إلى الصفحة الرئيسية</a>
+                    <a href="{{ route('login') }}" class="small text-decoration-none">&larr; العودة إلى الصفحة
+                        الرئيسية</a>
                 </div>
             </div>
         </div>
