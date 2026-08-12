@@ -12,6 +12,6 @@ class PharmacistDashboardController extends Controller
     {
         $pharmacist = Pharmacist::with('pharmacies')->where('user_id', $request->user()->id)->first();
 
-        return view('pharmacist.dashboard', compact('pharmacist'));
+        return view('Pharmacist.dashboard', compact('pharmacist'));
     }
 }
