@@ -1,0 +1,817 @@
+{
+    "info": {
+        "_postman_id": "pharmacy-link-api-2026",
+        "name": "pharmacyLink API",
+        "description": "مجموعة نقاط API لتطبيق pharmacyLink.\n\n1) عدّل متغير `baseUrl` إلى رابط سيرفرك (مثال: https://your-domain.com/api)\n2) نفّذ \"تسجيل الدخول\" أولاً — التوكن يُحفظ تلقائياً ويُرسل مع كل الطلبات المحمية.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://127.0.0.1:8000/api"
+        },
+        {
+            "key": "token",
+            "value": ""
+        }
+    ],
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "item": [
+        {
+            "name": "1. المصادقة (Auth)",
+            "item": [
+                {
+                    "name": "تسجيل الدخول + حفظ التوكن تلقائياً",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/auth/login",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"apitest@test.com\",\n  \"password\": \"secret123\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "event": [
+                            {
+                                "listen": "test",
+                                "script": {
+                                    "type": "text/javascript",
+                                    "exec": [
+                                        "const res = pm.response.json();",
+                                        "if (res && res.token) { pm.collectionVariables.set('token', res.token); console.log('Token saved ✔'); }"
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const res = pm.response.json();",
+                                    "if (res && res.token) { pm.collectionVariables.set('token', res.token); console.log('Token saved ✔'); }"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "إنشاء حساب عميل (register/user)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/auth/register/user",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"أحمد محمد\",\n  \"email\": \"ahmad@mail.com\",\n  \"password\": \"123456\",\n  \"password_confirmation\": \"123456\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "إنشاء حساب صيدلاني (register/pharmacist)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/auth/register/pharmacist",
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "name",
+                                    "type": "text",
+                                    "value": "صيدلاني تجريبي"
+                                },
+                                {
+                                    "key": "email",
+                                    "type": "text",
+                                    "value": "pharmacist@mail.com"
+                                },
+                                {
+                                    "key": "password",
+                                    "type": "text",
+                                    "value": "123456"
+                                },
+                                {
+                                    "key": "password_confirmation",
+                                    "type": "text",
+                                    "value": "123456"
+                                },
+                                {
+                                    "key": "national_id",
+                                    "type": "text",
+                                    "value": "123456789"
+                                },
+                                {
+                                    "key": "syndicate_number",
+                                    "type": "text",
+                                    "value": "SYN001"
+                                },
+                                {
+                                    "key": "license_number",
+                                    "type": "text",
+                                    "value": "LIC001"
+                                },
+                                {
+                                    "key": "graduation_university",
+                                    "type": "text",
+                                    "value": "جامعة النجاح"
+                                },
+                                {
+                                    "key": "graduation_year",
+                                    "type": "text",
+                                    "value": "2015"
+                                },
+                                {
+                                    "key": "certificate_file",
+                                    "type": "file",
+                                    "src": null
+                                },
+                                {
+                                    "key": "syndicate_file",
+                                    "type": "file",
+                                    "src": null
+                                },
+                                {
+                                    "key": "license_file",
+                                    "type": "file",
+                                    "src": null
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "تفعيل البريد OTP (verify-email)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/auth/verify-email",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"ahmad@mail.com\",\n  \"code\": \"123456\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "إعادة إرسال كود OTP",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/auth/resend-verification-code",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"ahmad@mail.com\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "بياناتي (me)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/me"
+                    }
+                },
+                {
+                    "name": "تسجيل الخروج (logout)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/auth/logout"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "2. عام (كتالوج / بدون مصادقة)",
+            "item": [
+                {
+                    "name": "فحص الاتصال (test)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/test"
+                    }
+                },
+                {
+                    "name": "البحث عن الأدوية (q / category_id / per_page)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/medicines?q=&category_id=&per_page=15"
+                    }
+                },
+                {
+                    "name": "تفاصيل دواء",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/medicines/1"
+                    }
+                },
+                {
+                    "name": "التصنيفات (categories)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/categories"
+                    }
+                },
+                {
+                    "name": "أشكال الجرعات (dosage-forms)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/dosage-forms"
+                    }
+                },
+                {
+                    "name": "الشركات المصنّعة (manufacturers)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/manufacturers"
+                    }
+                },
+                {
+                    "name": "المواد الفعّالة (active-ingredients)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/active-ingredients"
+                    }
+                },
+                {
+                    "name": "قائمة الصيدليات (pharmacies?q=)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/pharmacies?q="
+                    }
+                },
+                {
+                    "name": "تفاصيل صيدلية + توفر الأدوية",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/pharmacies/1"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "3. العميل (customer)",
+            "item": [
+                {
+                    "name": "لوحة التحكم (dashboard)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/customer/dashboard"
+                    }
+                },
+                {
+                    "name": "قائمة جرعاتي (doses)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/customer/doses"
+                    }
+                },
+                {
+                    "name": "إضافة جرعة (doses)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/customer/doses",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name_ar\": \"بنادول\",\n  \"name_en\": \"Panadol\",\n  \"dosage\": \"500mg\",\n  \"times\": [\"08:00\", \"22:00\"],\n  \"until\": \"2026-12-31\",\n  \"notes\": \"بعد الأكل\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "تعديل جرعة (doses/{id})",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": "{{baseUrl}}/customer/doses/1",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name_ar\": \"بنادول إكسترا\",\n  \"name_en\": \"Panadol Extra\",\n  \"dosage\": \"650mg\",\n  \"times\": [\"08:00\", \"22:00\"],\n  \"active\": true\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "حذف جرعة (doses/{id})",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": "{{baseUrl}}/customer/doses/1"
+                    }
+                },
+                {
+                    "name": "قائمة طلباتي (orders)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/customer/orders"
+                    }
+                },
+                {
+                    "name": "إنشاء طلب (orders)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/customer/orders",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"pharmacy_id\": 1,\n  \"delivery_address\": \"رام الله - وسط البلد\",\n  \"phone\": \"0599999999\",\n  \"notes\": \"يرجى الاتصال عند الوصول\",\n  \"items\": [\n    { \"medicine_id\": 5, \"qty\": 2 },\n    { \"medicine_id\": 9, \"qty\": 1 }\n  ]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "4. الصيدلاني (pharmacist)",
+            "item": [
+                {
+                    "name": "لوحة التحكم (dashboard)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/pharmacist/dashboard"
+                    }
+                },
+                {
+                    "name": "فواتير الشراء (purchases)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/pharmacist/purchases"
+                    }
+                },
+                {
+                    "name": "تسجيل فاتورة شراء (purchases)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/pharmacist/purchases",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"invoice_number\": \"INV-2026-001\",\n  \"supplier_name\": \"شركة الأدوية الحديثة\",\n  \"purchase_date\": \"2026-08-12\",\n  \"notes\": \"شحنة شهر آب\",\n  \"medicine_id\": [5, 9],\n  \"quantity\": [100, 50],\n  \"purchase_price\": [3.00, 4.00],\n  \"selling_price\": [5.50, 7.00],\n  \"expiry_date\": [\"2028-01-01\", \"2027-06-01\"],\n  \"lot_number\": [\"LOT-A\", null],\n  \"manufacturing_date\": [\"2025-08-01\", null]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "دُفعات المخزون (batches)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/pharmacist/batches"
+                    }
+                },
+                {
+                    "name": "فواتير البيع (sales)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/pharmacist/sales"
+                    }
+                },
+                {
+                    "name": "تسجيل فاتورة بيع (sales)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/pharmacist/sales",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"invoice_number\": 10025,\n  \"discount\": 2.00,\n  \"tax\": 0.00,\n  \"payment_method\": \"cash\",\n  \"status\": \"complete\",\n  \"notes\": null,\n  \"medicine_id\": [5],\n  \"quantity\": [3]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "دفعات المبيعات (sale-payments)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/pharmacist/sale-payments"
+                    }
+                },
+                {
+                    "name": "إضافة دفعة (sale-payments)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/pharmacist/sale-payments",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"sale_id\": 12,\n  \"payment_method\": \"bank_transfer\",\n  \"transaction_id\": \"bank_transfer\",\n  \"reference_number\": \"REF123\",\n  \"sender_name\": \"شركة التأمين\",\n  \"payment_date\": \"2026-08-12\",\n  \"notes\": null\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "طلبات الأدوية التي أرسلتها (medicine-requests)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/pharmacist/medicine-requests"
+                    }
+                },
+                {
+                    "name": "اقتراح دواء جديد (medicine-requests)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/pharmacist/medicine-requests",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"brand_name_en\": \"Paracare\",\n  \"brand_name_ar\": \"باراكير\",\n  \"manufacturer\": 1,\n  \"category\": 2,\n  \"dosage_form\": 3,\n  \"reference_price\": 6.00,\n  \"barcode\": null,\n  \"requires_prescription\": true,\n  \"active_ingredient\": [4],\n  \"strength_value\": [500],\n  \"strength_unit\": [\"mg\"]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "طلب صيدليتي (pharmacy-requests)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/pharmacist/pharmacy-requests"
+                    }
+                },
+                {
+                    "name": "تسجيل صيدلية (pharmacy-requests)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/pharmacist/pharmacy-requests",
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "name_ar",
+                                    "type": "text",
+                                    "value": "صيدلية الأمل"
+                                },
+                                {
+                                    "key": "name_en",
+                                    "type": "text",
+                                    "value": "Al-Amal Pharmacy"
+                                },
+                                {
+                                    "key": "phone",
+                                    "type": "text",
+                                    "value": "0591111111"
+                                },
+                                {
+                                    "key": "address",
+                                    "type": "text",
+                                    "value": "نابلس"
+                                },
+                                {
+                                    "key": "logo",
+                                    "type": "file",
+                                    "src": null
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "طلبات العملاء (orders)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/pharmacist/orders"
+                    }
+                },
+                {
+                    "name": "تحديث حالة طلب (orders/{id}/status)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": "{{baseUrl}}/pharmacist/orders/1/status",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": \"confirmed\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "5. المدير (admin)",
+            "item": [
+                {
+                    "name": "لوحة التحكم (dashboard)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/admin/dashboard"
+                    }
+                },
+                {
+                    "name": "كل الأدوية (medicines)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/admin/medicines"
+                    }
+                },
+                {
+                    "name": "إضافة دواء (medicines)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/admin/medicines",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"brand_name_en\": \"Panadol Extra\",\n  \"brand_name_ar\": \"بنادول إكسترا\",\n  \"manufacturer_id\": 1,\n  \"category_id\": 2,\n  \"dosage_form_id\": 3,\n  \"reference_price\": 5.00,\n  \"barcode\": \"6291041500213\",\n  \"requires_prescription\": false,\n  \"is_active\": true,\n  \"active_ingredient\": [4],\n  \"strength_value\": [500],\n  \"strength_unit\": [\"mg\"]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "تعديل دواء (medicines/{id})",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": "{{baseUrl}}/admin/medicines/1",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"reference_price\": 6.50,\n  \"is_active\": true\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "حذف دواء (medicines/{id})",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": "{{baseUrl}}/admin/medicines/1"
+                    }
+                },
+                {
+                    "name": "إضافة تصنيف (categories)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/admin/categories",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name_ar\": \"مسكنات\",\n  \"name_en\": \"Analgesics\",\n  \"is_active\": true\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "إضافة شكل جرعات (dosage-forms)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/admin/dosage-forms",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name_ar\": \"أقراص\",\n  \"name_en\": \"Tablets\",\n  \"is_active\": true\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "إضافة شركة (manufacturers)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/admin/manufacturers",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name_ar\": \"جلاكسو\",\n  \"name_en\": \"GSK\",\n  \"is_active\": true\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "إضافة مادة فعّالة (active-ingredients)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/admin/active-ingredients",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name_ar\": \"باراسيتامول\",\n  \"name_en\": \"Paracetamol\",\n  \"is_active\": true\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "طلبات الأدوية (medicine-requests?status=)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/admin/medicine-requests?status=pending"
+                    }
+                },
+                {
+                    "name": "اعتماد طلب دواء (approve)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/admin/medicine-requests/1/approve",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"brand_name_en\": \"Paracare\",\n  \"brand_name_ar\": \"باراكير\",\n  \"manufacturer\": 1,\n  \"category\": 2,\n  \"dosage_form\": 3,\n  \"reference_price\": 6.00,\n  \"barcode\": null,\n  \"requires_prescription\": true,\n  \"active_ingredient\": [4],\n  \"strength_value\": [500],\n  \"strength_unit\": [\"mg\"]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "رفض طلب دواء (reject)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/admin/medicine-requests/1/reject",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"admin_notes\": \"البيانات غير مكتملة\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "طلبات الصيدليات (pharmacy-requests?status=)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/admin/pharmacy-requests?status=pending"
+                    }
+                },
+                {
+                    "name": "اعتماد طلب صيدلية (approve)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/admin/pharmacy-requests/1/approve",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name_ar\": \"صيدلية الأمل\",\n  \"name_en\": \"Al-Amal Pharmacy\",\n  \"phone\": \"0591111111\",\n  \"address\": \"نابلس\",\n  \"latitude\": 32.221111,\n  \"longitude\": 35.254444,\n  \"opening_time\": \"08:00\",\n  \"closing_time\": \"22:00\",\n  \"status\": \"opne\",\n  \"is_verified\": true\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "رفض طلب صيدلية (reject)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/admin/pharmacy-requests/1/reject",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"admin_notes\": \"المستندات غير واضحة\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "6. الإشعارات (Notifications)",
+            "item": [
+                {
+                    "name": "قائمة الإشعارات",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/notifications?per_page=20"
+                    }
+                },
+                {
+                    "name": "تعليم إشعار كمقروء",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/notifications/1/read"
+                    }
+                },
+                {
+                    "name": "تعليم الكل كمقروء",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/notifications/read-all"
+                    }
+                }
+            ]
+        }
+    ]
+}

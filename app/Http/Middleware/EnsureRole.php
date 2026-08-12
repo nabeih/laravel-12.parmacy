@@ -11,6 +11,12 @@ class EnsureRole
     public function handle(Request $request, Closure $next, string $role): Response
     {
         if (! $request->user() || $request->user()->role !== $role) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'غير مصرح لك بالوصول إلى هذا المورد.',
+                ], 403);
+            }
             abort(403, 'غير مصرح لك بالوصول إلى هذه الصفحة.');
         }
         $response = $next($request);
