@@ -22,7 +22,7 @@ class ActiveIngredientController extends Controller
             ->latest()
             ->get();
 
-        return view('Admin.active_Ingredient.index', compact('ingredients', 'q'));
+        return view('admin.Active_Ingredient.index', compact('ingredients', 'q'));
     }
 
     public function create()
